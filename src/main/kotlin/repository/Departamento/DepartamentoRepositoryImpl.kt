@@ -69,7 +69,7 @@ class DepartamentoRepositoryImpl : DepartamentoRepository {
                 // Salvamos
                 return insert(entity)
             }
-            //era UN DOMINGO EN LA TARDE Y FUI A LOS COSHE DE CHOQUE alexito ESTA FUMANDO NO SE ENTERA LES GOOOOOOOOOOOOOOOOOO SIUUUUUUUU SE LO DEJAMOS AQUI QUE SE LO ENTREGE AL PROFE CHIIIIIIIIIIIIIIIII
+
         }
 
         private fun insert(departamento: Departamento): Departamento {
@@ -106,12 +106,16 @@ class DepartamentoRepositoryImpl : DepartamentoRepository {
 
             return departamento
         }
-
+        //tendria que o filtrar primero cuantos usuarios tienen el depId y con ese id
+        //luego updatear es id a otro idDep si quiero y luego borrar el departamento
+        //o si borro el departamento que se borren todos los empleados
         override fun delete(entity: Departamento): Boolean {
             // Creamos la consulta
-            val query = "DELETE FROM departamento WHERE uuid = ?"
+            val query = "DELETE FROM empleados WHERE departamento_uuid = ?"
             // Ejecutamos la consulta
             DataBaseManager.open()
+
+
             val result = DataBaseManager.delete(query, entity.uuid)
             // Cerramos la conexión
             DataBaseManager.close()

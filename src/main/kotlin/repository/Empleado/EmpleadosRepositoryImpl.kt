@@ -1,6 +1,8 @@
 package repository.Empleado
 
 import db.DataBaseManager
+import db.DataBaseManager.insert
+import db.DataBaseManager.update
 import models.Departamento
 import models.Empleados
 import repository.Departamento.DepartamentoRepository
@@ -82,11 +84,65 @@ class EmpleadosRepositoryImpl( private val dp :DepartamentoRepositoryImpl) : Emp
 
 
     override fun save(entity: Empleados): Empleados {
-        TODO("Not yet implemented")
+        // Si no existe salvamos si existe actualizamos
+        // Let run es un if else pero en una sola línea, es más ideomático en Kotlin, no te asustes y usa to if else con null ;)
+        val empleados = findById(entity.uuid)
+        empleados?.let {
+            // Actualizamos
+            return update(entity)
+        } ?: run {
+            // Salvamos
+            return insert(entity)
+        }
+    }
+
+
+    private fun insert(empleado: Empleados): Empleados {
+        // Creamos la consulta
+        val query = """INSERT INTO empleados 
+            (uuid, nombre, fechaAlta, departamento_uuid) 
+            VALUES (?, ?, ?,?)"""
+            .trimIndent()
+        // Ejecutamos la consulta
+        DataBaseManager.open()
+        val result = DataBaseManager.insert(
+            query, empleado.uuid, empleado.nombreEmpleado,empleado.fechaAlta, empleado.departamento
+        )
+        // Cerramos la conexión
+        DataBaseManager.close()
+        // Devolvemos el empleado
+
+        return empleado
+    }
+
+    private fun update(empleado: Empleados): Empleados {
+        // Creamos la consulta
+        val query = """UPDATE empleados 
+            SET nombreEmpleado = ?, fechaAlta = ?, departamento_uuid = ?"""
+            .trimIndent()
+        // Ejecutamos la consulta
+        DataBaseManager.open()
+        val result = DataBaseManager.update(
+            query, empleado.nombreEmpleado, empleado.fechaAlta,empleado.departamento
+        )
+        // Cerramos la conexión
+        DataBaseManager.close()
+        // Devolvemos el tenista
+
+        return empleado
     }
 
     override fun delete(entity: Empleados): Boolean {
-        TODO("Not yet implemented")
+
+        val query = "DELETE * FROM empleados WHERE uuid = ?"
+        DataBaseManager.open()
+        val result = DataBaseManager.delete(query, entity.uuid)
+        // Cerramos la conexión
+        DataBaseManager.close()
+        // Devolvemos el resultado
+        return result == 1
+
+
     }
 
 
